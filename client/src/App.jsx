@@ -1,18 +1,27 @@
-import MessageList from "./components/MessageList";
-import Participants from "./components/Participants";
-import NewMessage from "./components/NewMessage";
+import { useState } from "react";
+
+import ChatUI from "./components/ChatUI";
+import GetStarted from "./components/GetStated";
+
+import { getLocationParts } from "./utils";
 
 function App() {
+  const { roomId, encKey, username } = getLocationParts();
+
+  const [appCore, setAppCore] = useState({
+    roomId,
+    encKey,
+    username,
+  });
+
   return (
     <>
       <div className="container">
-        <div className="chat-ui">
-          <MessageList />
-          <Participants />
-        </div>
-        <div className="text-input">
-          <NewMessage />
-        </div>
+        {!appCore.roomId || !appCore.encKey || !appCore.username ? (
+          <GetStarted />
+        ) : (
+          <ChatUI />
+        )}
       </div>
     </>
   );

@@ -115,6 +115,36 @@ kbd {
   text-align: center;
 }
 
+/* get started */
+.get-started form {
+  margin-top: 10px;
+  max-width: 480px;
+}
+.get-started label,
+.get-started input {
+  display: block;
+  width: 100%;
+}
+
+.get-started input {
+  padding: 5px;
+  margin-bottom: 8px;
+}
+
+.get-started button {
+  background-color: green;
+  color: white;
+  border: 2px solid darkgreen;
+  border-radius: 3px;
+  font-weight: bold;
+  padding: 5px;
+}
+
+.get-started button:hover,
+.get-started label:hover {
+  cursor: pointer;
+}
+
 @media only screen and (max-width: 600px) {
   .chat-ui .participants,
   .hints {
