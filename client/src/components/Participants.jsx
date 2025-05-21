@@ -1,9 +1,9 @@
-const Participants = () => {
+const Participants = ({ participants }) => {
   return (
     <div className="participants">
-      <p>lex</p>
-      <p>mike</p>
-      <p>r340</p>
+      {participants.map((p) => (
+        <p key={p.id}>{p.username}</p>
+      ))}
     </div>
   );
 };

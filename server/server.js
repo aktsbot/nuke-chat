@@ -39,7 +39,13 @@ io.on("connection", (socket) => {
       message: `${username} joined`,
       username,
       socketId: socket.id,
-      id: getId(), // TODO
+      id: getId(),
+    });
+    io.to(roomId).emit("new-participant", {
+      date: new Date().toISOString(),
+      username,
+      socketId: socket.id,
+      id: getId(),
     });
   });
 
@@ -49,7 +55,7 @@ io.on("connection", (socket) => {
       message: `${username} left`,
       username,
       socketId: socket.id,
-      id: getId(), // TODO
+      id: getId(),
     });
   });
 
@@ -58,7 +64,7 @@ io.on("connection", (socket) => {
       ...message,
       date: new Date().toISOString(),
       socketId: socket.id,
-      id: getId(), // TODO
+      id: getId(),
     });
   });
   socket.on("disconnect", () => {

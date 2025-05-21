@@ -1,3 +1,5 @@
+import { useEffect, useRef } from "react";
+
 const Message = ({ m }) => {
   return (
     <div className={m.isFromMe ? "me" : "them"}>
@@ -28,8 +30,15 @@ const Notification = ({ m }) => {
 const MessageList = ({ messages }) => {
   console.log("message list -> ", messages);
 
+  const chatRef = useRef(null);
+
+  useEffect(() => {
+    // https://www.js-craft.io/blog/auto-scroll-bottom-react/
+    chatRef.current?.lastElementChild?.scrollIntoView();
+  }, [messages]);
+
   return (
-    <div className="chat">
+    <div className="chat" ref={chatRef}>
       {messages.map((m) => {
         if (m.type === "notification") {
           return <Notification m={m} key={m.id} />;

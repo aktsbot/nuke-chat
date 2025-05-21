@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 
-import { encrypt, decrypt } from "../utils";
+import { encrypt, decrypt, saveToStorage, getFromStorage } from "../utils";
 
 import MessageList from "./MessageList";
 import Participants from "./Participants";
@@ -14,7 +14,18 @@ const socket = io({
 
 const ChatUI = ({ appCore }) => {
   const { roomId, encKey, username } = appCore;
-  const [messages, setMessages] = useState([]);
+
+  const messagesKey = `${roomId}|${encKey}|${username}|m`;
+  const participantsKey = `${roomId}|${encKey}|${username}|p`;
+  const _messages = getFromStorage({
+    key: messagesKey,
+  });
+  const _participants = getFromStorage({
+    key: participantsKey,
+  });
+
+  const [messages, setMessages] = useState(_messages || []);
+  const [participants, setParticipants] = useState(_participants || []);
 
   const updateMessageList = (message) => {
     setMessages((prev) => {
@@ -55,6 +66,18 @@ const ChatUI = ({ appCore }) => {
       });
     });
 
+    socket.on("new-participant", (message) => {
+      setParticipants((prev) => {
+        const ps = [...prev];
+        if (!ps.find((p) => p.username === message.username)) {
+          ps.push({
+            ...message,
+          });
+        }
+        return ps;
+      });
+    });
+
     return () => {
       socket.emit("left-chat", {
         username,
@@ -62,6 +85,20 @@ const ChatUI = ({ appCore }) => {
       });
     };
   }, []);
+
+  useEffect(() => {
+    saveToStorage({
+      key: messagesKey,
+      data: messages,
+    });
+  }, [messages]);
+
+  useEffect(() => {
+    saveToStorage({
+      key: participantsKey,
+      data: participants,
+    });
+  }, [participants]);
 
   function handleSendMessage({ message }) {
     socket.emit("send-message", {
@@ -78,7 +115,7 @@ const ChatUI = ({ appCore }) => {
     <>
       <div className="chat-ui">
         <MessageList messages={messages} />
-        <Participants />
+        <Participants participants={participants} />
       </div>
       <div className="text-input">
         <NewMessage onSend={handleSendMessage} />

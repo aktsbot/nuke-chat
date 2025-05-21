@@ -26,3 +26,19 @@ export const encrypt = ({ message, encKey }) => {
 export const decrypt = ({ message, encKey }) => {
   return encrypt({ message, encKey });
 };
+
+export const saveToStorage = ({ key, data }) => {
+  localStorage.setItem(key, JSON.stringify(data));
+};
+
+export const getFromStorage = ({ key }) => {
+  let data = [];
+  try {
+    const _data = localStorage.getItem(key);
+    data = JSON.parse(_data);
+  } catch (error) {
+    console.error("error in storage load");
+    console.error(error);
+  }
+  return data;
+};
