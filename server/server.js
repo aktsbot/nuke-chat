@@ -1,7 +1,12 @@
 import express from "express";
-import cors from "cors";
+// import cors from "cors";
+import { v4 as uuidv4 } from "uuid";
 import { createServer } from "node:http";
 import { Server } from "socket.io";
+
+const getId = () => {
+  return uuidv4();
+};
 
 // config -----------
 const config = {
@@ -10,7 +15,7 @@ const config = {
 // ------------------
 
 const app = express();
-app.use(cors());
+// app.use(cors());
 
 app.use((req, res, next) => {
   res.on("finish", function () {
@@ -27,8 +32,34 @@ const io = new Server(server, {
 
 io.on("connection", (socket) => {
   console.log("A user connected: ", socket.id);
+
+  socket.on("joined-chat", ({ username, roomId }) => {
+    socket.join(roomId);
+    io.to(roomId).emit("notification", {
+      message: `${username} joined`,
+      username,
+      socketId: socket.id,
+      id: getId(), // TODO
+    });
+  });
+
+  socket.on("left-chat", ({ username, roomId }) => {
+    socket.leave(roomId);
+    io.to(roomId).emit("notification", {
+      message: `${username} left`,
+      username,
+      socketId: socket.id,
+      id: getId(), // TODO
+    });
+  });
+
   socket.on("send-message", (message) => {
-    io.emit("receive-message", message);
+    io.emit("receive-message", {
+      ...message,
+      date: new Date().toISOString(),
+      socketId: socket.id,
+      id: getId(), // TODO
+    });
   });
   socket.on("disconnect", () => {
     console.log("A user disconnected");

@@ -1,7 +1,34 @@
-const NewMessage = () => {
+import { useState } from "react";
+
+const NewMessage = ({ onSend }) => {
+  const [message, setMessage] = useState("");
+
+  function send() {
+    onSend({
+      message,
+    });
+    setMessage("");
+  }
+
+  function handleKeyUp(e) {
+    if (e.key === "Enter" && e.ctrlKey) {
+      e.target.form.requestSubmit();
+    }
+  }
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    send();
+  }
+
   return (
-    <form onSubmit={(e) => e.preventDefault()}>
-      <textarea placeholder="your message"></textarea>
+    <form onSubmit={handleSubmit}>
+      <textarea
+        placeholder="your message"
+        onChange={(e) => setMessage(e.target.value)}
+        value={message}
+        onKeyUp={handleKeyUp}
+      ></textarea>
       <div>
         <button>Send</button>
         <p className="text-center hints">

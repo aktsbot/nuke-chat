@@ -20,7 +20,7 @@ function App() {
         {!appCore.roomId || !appCore.encKey || !appCore.username ? (
           <GetStarted />
         ) : (
-          <ChatUI />
+          <ChatUI appCore={appCore} />
         )}
       </div>
     </>

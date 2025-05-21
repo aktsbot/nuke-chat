@@ -50,6 +50,13 @@
   border-radius: 3px;
 }
 
+.chat .notification {
+  margin: 5px auto;
+  color: darkgrey;
+  font-size: smaller;
+  border: 1px solid lightgrey;
+}
+
 .chat .them {
   margin-right: auto;
   background-color: darkgray;
