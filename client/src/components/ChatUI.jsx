@@ -1,7 +1,13 @@
 import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 
-import { encrypt, decrypt, saveToStorage, getFromStorage } from "../utils";
+import {
+  encrypt,
+  decrypt,
+  saveToStorage,
+  getFromStorage,
+  nuke,
+} from "../utils";
 
 import MessageList from "./MessageList";
 import Participants from "./Participants";
@@ -37,6 +43,18 @@ const ChatUI = ({ appCore }) => {
     });
   };
 
+  const updateParticipants = (message) => {
+    setParticipants((prev) => {
+      const ps = [...prev];
+      if (!ps.find((p) => p.username === message.username)) {
+        ps.push({
+          ...message,
+        });
+      }
+      return ps;
+    });
+  };
+
   useEffect(() => {
     socket.emit("joined-chat", {
       username,
@@ -56,6 +74,10 @@ const ChatUI = ({ appCore }) => {
         }),
         isFromMe: message.username == username,
       });
+
+      updateParticipants({
+        username: message.username,
+      });
     });
 
     socket.on("notification", (message) => {
@@ -66,16 +88,12 @@ const ChatUI = ({ appCore }) => {
       });
     });
 
+    socket.on("nuke", () => {
+      nuke();
+    });
+
     socket.on("new-participant", (message) => {
-      setParticipants((prev) => {
-        const ps = [...prev];
-        if (!ps.find((p) => p.username === message.username)) {
-          ps.push({
-            ...message,
-          });
-        }
-        return ps;
-      });
+      updateParticipants(message);
     });
 
     return () => {
@@ -101,6 +119,15 @@ const ChatUI = ({ appCore }) => {
   }, [participants]);
 
   function handleSendMessage({ message }) {
+    // chat commands!
+    if (message === "/nuke") {
+      socket.emit("nuke", {
+        roomId,
+      });
+      return;
+    }
+
+    // normal messages
     socket.emit("send-message", {
       roomId,
       username,

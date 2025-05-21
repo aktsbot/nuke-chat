@@ -42,3 +42,8 @@ export const getFromStorage = ({ key }) => {
   }
   return data;
 };
+
+export const nuke = () => {
+  localStorage.clear();
+  location.href = "/";
+};

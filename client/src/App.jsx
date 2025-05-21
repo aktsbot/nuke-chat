@@ -8,7 +8,7 @@ import { getLocationParts } from "./utils";
 function App() {
   const { roomId, encKey, username } = getLocationParts();
 
-  const [appCore, setAppCore] = useState({
+  const [appCore] = useState({
     roomId,
     encKey,
     username,
@@ -18,7 +18,7 @@ function App() {
     <>
       <div className="container">
         {!appCore.roomId || !appCore.encKey || !appCore.username ? (
-          <GetStarted />
+          <GetStarted appCore={appCore} />
         ) : (
           <ChatUI appCore={appCore} />
         )}

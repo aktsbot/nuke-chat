@@ -22,6 +22,7 @@ const GetStarted = ({ appCore }) => {
     // https://domain.com/r800#k9089#akts
     const link = `/${data.roomId}#${data.encKey}#${data.username}`;
     location.href = link;
+    location.reload(); // the above location.href did not cause a page reload
   };
 
   return (
@@ -34,6 +35,7 @@ const GetStarted = ({ appCore }) => {
           type="text"
           placeholder="harryp"
           id="username"
+          value={data.username}
           required
           onChange={handleChange}
         />
@@ -43,6 +45,7 @@ const GetStarted = ({ appCore }) => {
           type="text"
           placeholder="h0gw4rts98"
           id="roomId"
+          value={data.roomId}
           required
           onChange={handleChange}
         />
@@ -52,6 +55,7 @@ const GetStarted = ({ appCore }) => {
           type="text"
           placeholder="78RdheTykksuoP"
           id="encKey"
+          value={data.encKey}
           required
           onChange={handleChange}
         />

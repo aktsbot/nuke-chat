@@ -36,6 +36,7 @@ io.on("connection", (socket) => {
   socket.on("joined-chat", ({ username, roomId }) => {
     socket.join(roomId);
     io.to(roomId).emit("notification", {
+      date: new Date().toISOString(),
       message: `${username} joined`,
       username,
       socketId: socket.id,
@@ -60,13 +61,22 @@ io.on("connection", (socket) => {
   });
 
   socket.on("send-message", (message) => {
-    io.emit("receive-message", {
+    const { roomId } = message;
+    io.to(roomId).emit("receive-message", {
       ...message,
       date: new Date().toISOString(),
       socketId: socket.id,
       id: getId(),
     });
   });
+
+  socket.on("nuke", (message) => {
+    const { roomId } = message;
+    io.to(roomId).emit("nuke", {
+      ...message,
+    });
+  });
+
   socket.on("disconnect", () => {
     console.log("A user disconnected");
   });
