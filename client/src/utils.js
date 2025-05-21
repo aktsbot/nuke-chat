@@ -47,3 +47,35 @@ export const nuke = () => {
   localStorage.clear();
   location.href = "/";
 };
+
+export const buildMessageList = ({
+  myUsername,
+  newMessages,
+  existingMessages,
+  encKey,
+}) => {
+  const result = [...existingMessages];
+  for (const m of newMessages) {
+    if (!result.find((r) => r.id === m.id)) {
+      let decryptedMessage = "";
+      if (m.type === "message") {
+        decryptedMessage = decrypt({
+          message: m.message,
+          encKey,
+        });
+      }
+      result.push({
+        ...m,
+        isFromMe: myUsername === m.username,
+        decryptedMessage,
+      });
+    }
+  }
+  // sort by date
+  result.sort((a, b) => {
+    let c = new Date(a.date);
+    let d = new Date(b.date);
+    return c.getTime() - d.getTime();
+  });
+  return result;
+};

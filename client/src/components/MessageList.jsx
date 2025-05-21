@@ -28,8 +28,6 @@ const Notification = ({ m }) => {
 };
 
 const MessageList = ({ messages }) => {
-  console.log("message list -> ", messages);
-
   const chatRef = useRef(null);
 
   useEffect(() => {

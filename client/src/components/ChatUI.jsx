@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { io } from "socket.io-client";
 
 import {
@@ -7,6 +7,7 @@ import {
   saveToStorage,
   getFromStorage,
   nuke,
+  buildMessageList,
 } from "../utils";
 
 import MessageList from "./MessageList";
@@ -55,6 +56,14 @@ const ChatUI = ({ appCore }) => {
     });
   };
 
+  const getMessagesCB = useCallback(() => {
+    return messages;
+  }, [messages]);
+
+  const getParticipantsCB = useCallback(() => {
+    return participants;
+  }, [participants]);
+
   useEffect(() => {
     socket.emit("joined-chat", {
       username,
@@ -98,13 +107,18 @@ const ChatUI = ({ appCore }) => {
 
     // sync to another participant
     socket.on("sync-participant", (message) => {
-      const _participants = [...participants];
-      const _messages = messages.map((m) => {
-        const _m = { ...m };
-        delete _m["isFromMe"];
-        return _m;
-      });
+      const _participants = [...getParticipantsCB()];
+      const _messages = getMessagesCB()
+        .filter((m) => m.type === "message")
+        .map((m) => {
+          const _m = { ...m };
+          delete _m["isFromMe"];
+          delete _m["decryptedMessage"];
+          return _m;
+        });
 
+      // console.log("sending p ", _participants);
+      // console.log("sending m ", _messages);
       socket.emit("sync-participant-data", {
         data: {
           result: _participants,
@@ -112,6 +126,7 @@ const ChatUI = ({ appCore }) => {
           source: username,
         },
         socketId: message.participantSocketId,
+        roomId,
       });
       socket.emit("sync-participant-data", {
         data: {
@@ -120,12 +135,32 @@ const ChatUI = ({ appCore }) => {
           source: username,
         },
         socketId: message.participantSocketId,
+        roomId,
       });
     });
 
     // we get data from clients to sync with
     socket.on("participant-data", (message) => {
-      console.log("data to merge ", message);
+      if (message.source === username) {
+        return;
+      }
+      // console.log("rcd pd ", message);
+      if (message?.type === "messages") {
+        const _completeMessages = buildMessageList({
+          myUsername: username,
+          newMessages: message?.result || [],
+          existingMessages: messages,
+          encKey,
+        });
+        for (const cm of _completeMessages) {
+          updateMessageList(cm);
+        }
+      } else if (message?.type === "participants") {
+        const _allParticipants = message?.result || [];
+        for (const p of _allParticipants) {
+          updateParticipants(p);
+        }
+      }
     });
 
     return () => {

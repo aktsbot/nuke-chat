@@ -84,9 +84,10 @@ io.on("connection", (socket) => {
   });
 
   // clients send back the data they have
-  socket.on("sync-participant-data", ({ socketId, data }) => {
+  socket.on("sync-participant-data", ({ socketId, data, roomId }) => {
     // server sends data back to the client who requested the data for sync
-    io.to(socketId).emit("participant-data", data);
+    // io.to(socketId).emit("participant-data", data);
+    io.to(roomId).emit("participant-data", data);
   });
 
   socket.on("disconnect", () => {
