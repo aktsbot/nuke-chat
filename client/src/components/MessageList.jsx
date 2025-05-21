@@ -13,7 +13,7 @@ const Message = ({ m }) => {
           whiteSpace: "pre-wrap",
         }}
       >
-        {m.message}
+        {m.decryptedMessage}
       </p>
     </div>
   );

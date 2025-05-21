@@ -68,7 +68,7 @@ const ChatUI = ({ appCore }) => {
       updateMessageList({
         type: "message",
         ...message,
-        message: decrypt({
+        decryptedMessage: decrypt({
           message: message.message,
           encKey,
         }),
@@ -94,6 +94,38 @@ const ChatUI = ({ appCore }) => {
 
     socket.on("new-participant", (message) => {
       updateParticipants(message);
+    });
+
+    // sync to another participant
+    socket.on("sync-participant", (message) => {
+      const _participants = [...participants];
+      const _messages = messages.map((m) => {
+        const _m = { ...m };
+        delete _m["isFromMe"];
+        return _m;
+      });
+
+      socket.emit("sync-participant-data", {
+        data: {
+          result: _participants,
+          type: "participants",
+          source: username,
+        },
+        socketId: message.participantSocketId,
+      });
+      socket.emit("sync-participant-data", {
+        data: {
+          result: _messages,
+          type: "messages",
+          source: username,
+        },
+        socketId: message.participantSocketId,
+      });
+    });
+
+    // we get data from clients to sync with
+    socket.on("participant-data", (message) => {
+      console.log("data to merge ", message);
     });
 
     return () => {

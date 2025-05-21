@@ -48,6 +48,12 @@ io.on("connection", (socket) => {
       socketId: socket.id,
       id: getId(),
     });
+    // syncing data between clients
+    io.to(roomId).emit("sync-participant", {
+      participantUsername: username,
+      participantSocketId: socket.id,
+      id: getId(),
+    });
   });
 
   socket.on("left-chat", ({ username, roomId }) => {
@@ -75,6 +81,12 @@ io.on("connection", (socket) => {
     io.to(roomId).emit("nuke", {
       ...message,
     });
+  });
+
+  // clients send back the data they have
+  socket.on("sync-participant-data", ({ socketId, data }) => {
+    // server sends data back to the client who requested the data for sync
+    io.to(socketId).emit("participant-data", data);
   });
 
   socket.on("disconnect", () => {
