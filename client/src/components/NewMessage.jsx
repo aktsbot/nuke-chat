@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 const NewMessage = ({ onSend }) => {
   const [message, setMessage] = useState("");
+  const formRef = useRef(null);
 
   function send() {
     onSend({
@@ -21,16 +22,21 @@ const NewMessage = ({ onSend }) => {
     send();
   }
 
+  function scrollToInput() {
+    formRef.current?.lastElementChild?.scrollIntoView();
+  }
+
   return (
     <>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} ref={formRef}>
         <textarea
-          placeholder="your message here. ctrl + enter will send"
+          placeholder="your message here. ctrl + enter"
           onChange={(e) => setMessage(e.target.value)}
           value={message}
           onKeyUp={handleKeyUp}
           rows={1}
           required
+          onFocus={scrollToInput}
         ></textarea>
         <div>
           <button>Send</button>
