@@ -25,7 +25,7 @@ const NewMessage = ({ onSend }) => {
   function scrollToInput() {
     setTimeout(() => {
       formRef.current?.lastElementChild?.scrollIntoView();
-    }, 100);
+    }, 500);
   }
 
   return (
@@ -39,6 +39,7 @@ const NewMessage = ({ onSend }) => {
           rows={1}
           required
           onBlur={scrollToInput}
+          onFocus={scrollToInput}
         ></textarea>
         <div>
           <button>Send</button>
