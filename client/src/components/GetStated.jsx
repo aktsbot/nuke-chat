@@ -19,10 +19,12 @@ const GetStarted = ({ appCore }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // https://domain.com/r800#k9089#akts
-    const link = `/${data.roomId}#${data.encKey}#${data.username}`;
-    location.href = link;
-    location.reload(); // the above location.href did not cause a page reload
+    // https://domain.com/r800:k9089:akts
+    const link = `/${data.roomId}#${data.encKey}::${data.username}`;
+    window.location.href = link;
+    setTimeout(() => {
+      window.location.reload(true);
+    }, 1000);
   };
 
   return (

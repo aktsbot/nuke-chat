@@ -25,20 +25,15 @@ const NewMessage = ({ onSend }) => {
     <>
       <form onSubmit={handleSubmit}>
         <textarea
-          placeholder="your message"
+          placeholder="your message here. ctrl + enter will send"
           onChange={(e) => setMessage(e.target.value)}
           value={message}
           onKeyUp={handleKeyUp}
+          rows={1}
+          required
         ></textarea>
         <div>
           <button>Send</button>
-          <p className="text-center hints">
-            <small>
-              or <kbd>ctrl</kbd>
-              {"+"}
-              <kbd>enter</kbd>
-            </small>
-          </p>
         </div>
       </form>
       <p>
